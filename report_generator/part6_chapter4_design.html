@@ -1,0 +1,111 @@
+﻿  <!-- ==================== CHAPTER 4: SYSTEM DESIGN ==================== -->
+  <div class="page-container page-break">
+    <div class="chapter-heading">CHAPTER 4</div>
+    <div class="chapter-title">SYSTEM DESIGN</div>
+
+    <h3 class="subheading">4.1 MODULE DESCRIPTION</h3>
+    <p>
+      The HRMS Enterprise platform is partitioned into four primary functional modules, each supported by dedicated database entities:
+    </p>
+
+    <h4 class="tertiary-heading">4.1.1 Employee Onboarding &amp; Master Directory Module</h4>
+    <p>
+      Manages the transition of job candidates to active employees, storing personal identity particulars, contact details, bank credentials, and departmental affiliations.
+    </p>
+    <div class="table-caption">Table 4.1.1 Employee Master Entity Data Dictionary</div>
+    <table class="academic-table">
+      <thead>
+        <tr>
+          <th>Field Name</th>
+          <th>Data Type</th>
+          <th>Constraints</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique system identifier for employee</td></tr>
+        <tr><td>employee_code</td><td>VARCHAR(20)</td><td>UNIQUE, NOT NULL</td><td>Formal employee code (e.g., EMP001)</td></tr>
+        <tr><td>full_name</td><td>VARCHAR(100)</td><td>NOT NULL</td><td>Legal name of the employee</td></tr>
+        <tr><td>email</td><td>VARCHAR(100)</td><td>UNIQUE, NOT NULL</td><td>Official corporate email address</td></tr>
+        <tr><td>department_id</td><td>UUID</td><td>FOREIGN KEY</td><td>References primary department entity</td></tr>
+        <tr><td>designation_id</td><td>UUID</td><td>FOREIGN KEY</td><td>References assigned job role designation</td></tr>
+        <tr><td>employee_status</td><td>VARCHAR(20)</td><td>NOT NULL</td><td>Status: ACTIVE, PROBATION, NOTICE, EXITED</td></tr>
+        <tr><td>pan_number</td><td>VARCHAR(10)</td><td>NOT NULL</td><td>Statutory Permanent Account Number</td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="tertiary-heading">4.1.2 Attendance, Shifts &amp; Geofencing Module</h4>
+    <p>
+      Records real-time punch timestamps, geofence coordinates, and enforces shift punctuality rules.
+    </p>
+    <div class="table-caption">Table 4.1.2 Attendance &amp; Shift Tracking Data Dictionary</div>
+    <table class="academic-table">
+      <thead>
+        <tr>
+          <th>Field Name</th>
+          <th>Data Type</th>
+          <th>Constraints</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique attendance transaction ID</td></tr>
+        <tr><td>employee_id</td><td>UUID</td><td>FOREIGN KEY, NOT NULL</td><td>References parent employee entity</td></tr>
+        <tr><td>attendance_date</td><td>DATE</td><td>NOT NULL</td><td>Date of attendance record</td></tr>
+        <tr><td>punch_in_time</td><td>TIMESTAMP</td><td>NULLABLE</td><td>Time of check-in punch</td></tr>
+        <tr><td>punch_out_time</td><td>TIMESTAMP</td><td>NULLABLE</td><td>Time of check-out punch</td></tr>
+        <tr><td>status</td><td>VARCHAR(20)</td><td>NOT NULL</td><td>ON_TIME, LATE, HALF_DAY, ABSENT</td></tr>
+        <tr><td>punch_type</td><td>VARCHAR(20)</td><td>NOT NULL</td><td>PUNCH_IN, PUNCH_OUT, REGULARISATION</td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="tertiary-heading">4.1.3 Statutory Payroll Engine &amp; Leave System</h4>
+    <p>
+      Calculates monthly salaries and manages employee leave quotas.
+    </p>
+    <div class="table-caption">Table 4.1.3 Indian Statutory Payroll &amp; Structure Data Dictionary</div>
+    <table class="academic-table">
+      <thead>
+        <tr>
+          <th>Field Name</th>
+          <th>Data Type</th>
+          <th>Constraints</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>id</td><td>UUID</td><td>PRIMARY KEY</td><td>Unique payroll record ID</td></tr>
+        <tr><td>payroll_run_id</td><td>UUID</td><td>FOREIGN KEY, NOT NULL</td><td>References monthly payroll run batch</td></tr>
+        <tr><td>employee_id</td><td>UUID</td><td>FOREIGN KEY, NOT NULL</td><td>References employee recipient</td></tr>
+        <tr><td>gross_salary</td><td>NUMERIC(12,2)</td><td>NOT NULL</td><td>Gross monthly earnings (Basic+HRA+Special)</td></tr>
+        <tr><td>pf_employee</td><td>NUMERIC(10,2)</td><td>NOT NULL</td><td>Statutory EPF deduction (12% of wage ceiling)</td></tr>
+        <tr><td>esi_employee</td><td>NUMERIC(10,2)</td><td>NOT NULL</td><td>Statutory ESIC deduction (0.75% of gross)</td></tr>
+        <tr><td>net_salary</td><td>NUMERIC(12,2)</td><td>NOT NULL</td><td>Final take-home salary after all deductions</td></tr>
+      </tbody>
+    </table>
+
+    <h4 class="tertiary-heading">4.1.4 Statutory Compliance &amp; Admin Configuration Module (FR12)</h4>
+    <p>
+      Maintains dynamic compliance parameters in PostgreSQL, enabling live rate updates without system recompilation.
+    </p>
+    <div class="table-caption">Table 4.1.4 Statutory Configuration (FR12) Data Dictionary</div>
+    <table class="academic-table">
+      <thead>
+        <tr>
+          <th>Config Key</th>
+          <th>Value</th>
+          <th>Unit</th>
+          <th>Statutory Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>PF_EMPLOYEE_PERCENT</td><td>12.00</td><td>%</td><td>EPFO Employee contribution rate</td></tr>
+        <tr><td>PF_EMPLOYER_PERCENT</td><td>12.00</td><td>%</td><td>EPFO Employer share (EPS 8.33% + EPF 3.67%)</td></tr>
+        <tr><td>ESI_EMPLOYEE_PERCENT</td><td>0.75</td><td>%</td><td>ESIC Employee contribution rate</td></tr>
+        <tr><td>ESI_EMPLOYER_PERCENT</td><td>3.25</td><td>%</td><td>ESIC Employer contribution rate</td></tr>
+        <tr><td>PF_WAGE_CEILING</td><td>15000.00</td><td>INR</td><td>Statutory threshold ceiling for EPF deduction</td></tr>
+        <tr><td>ESI_GROSS_CEILING</td><td>21000.00</td><td>INR</td><td>Eligibility threshold for mandatory ESIC coverage</td></tr>
+        <tr><td>LOP_WORKING_DAYS</td><td>26</td><td>Days</td><td>Divisor days used for per-day salary deduction</td></tr>
+      </tbody>
+    </table>
+  </div>

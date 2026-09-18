@@ -1,0 +1,61 @@
+﻿  <!-- ==================== CHAPTER 3: SYSTEM REQUIREMENTS ==================== -->
+  <div class="page-container page-break">
+    <div class="chapter-heading">CHAPTER 3</div>
+    <div class="chapter-title">SYSTEM REQUIREMENTS</div>
+
+    <h3 class="subheading">3.1 HARDWARE REQUIREMENTS</h3>
+    <p class="no-indent">
+      The hardware specifications required to deploy and execute the HRMS Enterprise platform are outlined below:
+    </p>
+    <ul>
+      <li><b>Processor:</b> Intel Core i5 / AMD Ryzen 5 (2.4 GHz quad-core or higher)</li>
+      <li><b>Random Access Memory (RAM):</b> 8 GB minimum (16 GB recommended for concurrent backend and Vite compilation)</li>
+      <li><b>Hard Disk / Storage:</b> 512 GB Solid State Drive (SSD) with minimum 10 GB free space</li>
+      <li><b>Network:</b> Standard TCP/IP broadband connectivity (minimum 10 Mbps)</li>
+    </ul>
+
+    <h3 class="subheading">3.2 SOFTWARE REQUIREMENTS</h3>
+    <ul>
+      <li><b>Operating System:</b> Windows 10 / 11 (64-bit), Linux (Ubuntu 22.04+ LTS), or macOS</li>
+      <li><b>Integrated Development Environment (IDE):</b> Visual Studio Code / IntelliJ IDEA Ultimate</li>
+      <li><b>Runtime Environments:</b> Java Development Kit (JDK 17 or JDK 25 LTS), Node.js (v18.x or v20.x LTS)</li>
+      <li><b>Backend Framework:</b> Spring Boot 3.3.4 (Spring Web, Spring Security, Spring Data JPA, Hibernate ORM)</li>
+      <li><b>Frontend Framework:</b> React 18, Vite 8, Lucide React Icon Library, Tailwind/Modern CSS</li>
+      <li><b>Database Engine:</b> PostgreSQL 18 with HikariCP Connection Pool</li>
+      <li><b>Build Tools:</b> Apache Maven 3.9.x, npm 10.x</li>
+    </ul>
+
+    <h3 class="subheading">3.3 SOFTWARE DESCRIPTION</h3>
+    <div class="figure-box">
+      <div style="background: #f1f5f9; padding: 18px; border: 1px solid #cbd5e1; border-radius: 8px; display: inline-block;">
+        <span style="font-size: 16pt; font-weight: bold; color: #0284c7;">Visual Studio Code &amp; Spring Boot Tooling</span><br>
+        <span style="font-size: 10pt; color: #475569;">Enterprise Full-Stack Development Ecosystem</span>
+      </div>
+      <div class="figure-caption">Fig. 3.1. VS Code &amp; Full-Stack Development Tools</div>
+    </div>
+
+    <h3 class="subheading">3.3.1 FRONTEND ARCHITECTURE (REACT 18 &amp; VIRTUAL DOM)</h3>
+    <p>
+      <b>ReactJS</b> is an open-source, component-based JavaScript library maintained by Meta for building dynamic user interfaces. In this project, React 18 is paired with Vite 8 to achieve instantaneous build compilation and modular application state handling.
+    </p>
+    <p>
+      <b>The Virtual DOM:</b> Instead of performing slow, expensive direct manipulations on the real browser Document Object Model (DOM), React maintains a lightweight virtual representation in memory. When state updates occur (e.g., when an employee logs in or regularises attendance), React computes an optimized diff between the previous and current virtual DOM trees, updating only the affected nodes in the real browser DOM.
+    </p>
+    <p class="no-indent"><b>Key Frontend Features Employed:</b></p>
+    <ul>
+      <li><b>Declarative Component Architecture:</b> Modular encapsulation of KPI cards, data tables, modal popups, and navigation sidebars.</li>
+      <li><b>Hooks &amp; State Management:</b> Systematic use of <code>useState</code>, <code>useEffect</code>, and <code>useCallback</code> to synchronize local view state with backend REST APIs.</li>
+      <li><b>Stateless Axios/Fetch Interceptors:</b> Automatically attaches the active JWT Bearer token to all outgoing HTTP request headers.</li>
+    </ul>
+
+    <h3 class="subheading">3.3.2 BACKEND ARCHITECTURE (SPRING BOOT 3 &amp; JPA)</h3>
+    <p>
+      <b>Spring Boot 3</b> is an enterprise-grade Java framework that simplifies the configuration, deployment, and execution of scalable microservices and RESTful web applications.
+    </p>
+    <ul>
+      <li><b>Spring Web (MVC):</b> Handles HTTP request dispatching, controller mappings, JSON payload serialization, and exception handling.</li>
+      <li><b>Spring Data JPA &amp; Hibernate:</b> Eliminates manual SQL boilerplate code by mapping relational database tables directly to Java entity classes using ORM annotations (<code>@Entity</code>, <code>@Table</code>, <code>@ManyToOne</code>).</li>
+      <li><b>Spring Security &amp; JWT:</b> Intercepts all incoming HTTP requests via a custom <code>JwtAuthenticationFilter</code>, validating token digital signatures before permitting access.</li>
+      <li><b>PostgreSQL 18:</b> Provides transactional ACID guarantees, relational foreign key constraints, and robust data persistence.</li>
+    </ul>
+  </div>

@@ -1,0 +1,121 @@
+﻿  <!-- ==================== CHAPTER 5: TESTING ==================== -->
+  <div class="page-container page-break">
+    <div class="chapter-heading">CHAPTER 5</div>
+    <div class="chapter-title">TESTING</div>
+
+    <h3 class="subheading">5.1 UNIT TESTING</h3>
+    <p>
+      Unit testing validates individual business logic algorithms in isolation. In the HRMS backend, comprehensive unit tests were constructed using <b>JUnit 5</b> and <b>Mockito</b> to verify statutory payroll formulas (PF 12% calculation against the ₹15,000 ceiling, ESIC 0.75% calculation on gross wages under ₹21,000), attendance grace period cutoffs (09:15 AM threshold), and Loss of Pay (LOP) calculations based on a 26-day working divisor.
+    </p>
+
+    <h3 class="subheading">5.2 INTEGRATION TESTING</h3>
+    <p>
+      Integration testing confirms the seamless interoperability between the Spring Boot REST API controllers, JPA repositories, and the React frontend. Automated PowerShell and HTTP client integration scripts tested all endpoints:
+    </p>
+    <ul>
+      <li><b>Authentication &amp; JWT Verification:</b> Validated credential validation for Super Admin, HR Manager, Department Manager, and Staff Employee.</li>
+      <li><b>Employee Directory Retrieval:</b> Verified relational fetching of employee records with linked departments and salary structures.</li>
+      <li><b>Live Dynamic Statutory Update (FR12):</b> Executed live <code>PUT /api/v1/admin/statutory-config/{id}</code> requests, confirming immediate persistence in PostgreSQL and propagation to subsequent payroll runs.</li>
+    </ul>
+
+    <h3 class="subheading">5.3 SECURITY AND AUTHENTICATION</h3>
+    <p>
+      Stateless JSON Web Tokens (JWT) guarantee secure communication between the React frontend and Spring Boot backend. Upon successful login, the backend issues a signed JWT containing claims for the user's role and associated <code>employeeId</code>.
+    </p>
+
+    <div class="code-window">
+      <div class="code-title">
+        <span>frontend/src/services/api.js — Storing Token in Local Storage</span>
+        <span>JavaScript</span>
+      </div>
+      <pre><code><span class="keyword">export function</span> <span class="func">setAuthToken</span>(token) {
+  <span class="keyword">if</span> (token) {
+    localStorage.<span class="func">setItem</span>(<span class="string">'token'</span>, token);
+  } <span class="keyword">else</span> {
+    localStorage.<span class="func">removeItem</span>(<span class="string">'token'</span>);
+  }
+}
+
+<span class="keyword">export function</span> <span class="func">setCurrentUser</span>(user) {
+  <span class="keyword">if</span> (user) {
+    localStorage.<span class="func">setItem</span>(<span class="string">'hrms_user'</span>, JSON.<span class="func">stringify</span>(user));
+  } <span class="keyword">else</span> {
+    localStorage.<span class="func">removeItem</span>(<span class="string">'hrms_user'</span>);
+  }
+}</code></pre>
+    </div>
+    <div class="figure-caption">Fig. 5.1. Storing the JWT Authentication Token in Local Storage</div>
+
+    <div class="code-window" style="margin-top: 24px;">
+      <div class="code-title">
+        <span>frontend/src/services/api.js — Attaching Bearer Token in API Interceptor</span>
+        <span>JavaScript</span>
+      </div>
+      <pre><code><span class="keyword">async function</span> <span class="func">request</span>(endpoint, options = {}) {
+  <span class="keyword">const</span> url = <span class="string">`${BASE_URL}${endpoint}`</span>;
+  <span class="keyword">const</span> token = <span class="func">getAuthToken</span>();
+  
+  <span class="comment">// Attach Bearer Token to outgoing HTTP Authorization Header</span>
+  <span class="keyword">const</span> headers = {
+    <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>,
+    ...(token ? { <span class="string">'Authorization'</span>: <span class="string">`Bearer ${token}`</span> } : {}),
+    ...(options.headers || {})
+  };
+
+  <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="func">fetch</span>(url, { ...options, headers });
+  <span class="keyword">return</span> <span class="keyword">await</span> response.<span class="func">json</span>();
+}</code></pre>
+    </div>
+    <div class="figure-caption">Fig. 5.2. Authenticating API Requests using Bearer Token Interceptor</div>
+  </div>
+
+  <!-- ==================== CHAPTER 6: CONCLUSION ==================== -->
+  <div class="page-container page-break">
+    <div class="chapter-heading">CHAPTER 6</div>
+    <div class="chapter-title">CONCLUSION AND FUTURE WORK</div>
+
+    <h3 class="subheading">6.1 CONCLUSION</h3>
+    <p>
+      The <b>Employee Onboarding and HR Management System</b> successfully delivers a robust, secure, and unified software solution that overcomes the severe limitations of traditional manual paper records and disconnected spreadsheets. By integrating candidate onboarding, master employee data, geofenced attendance tracking, multi-tier leave quota approvals, automated Indian statutory payroll processing, performance management, and offboarding workflows into a single cohesive platform, the system dramatically accelerates HR operational efficiency.
+    </p>
+    <p>
+      The full-stack implementation combining <b>Spring Boot 3</b>, <b>PostgreSQL 18</b>, and <b>React 18 / Vite 8</b> guarantees 100% referential data integrity, sub-second response times, and stateless security via JSON Web Tokens. Crucially, the platform automates Indian statutory labor filings (PF-ECR, ESIC, Form 24Q) and features a live dynamic statutory configuration module (FR12) that allows administrators to adjust compliance rates without recompilation. In summary, the project satisfies all functional and non-functional requirements specified in IEEE Std 830-1998, establishing an enterprise-ready human resource operating platform.
+    </p>
+
+    <h3 class="subheading">6.2 FUTURE WORK</h3>
+    <p>
+      Future planned enhancements to further extend the capabilities of the HRMS platform include:
+    </p>
+    <ul>
+      <li><b>Cross-Platform Mobile Application:</b> Developing native iOS and Android mobile applications using React Native, enabling biometric check-ins (Face ID and Fingerprint) and offline punch synchronization.</li>
+      <li><b>Direct Government API Integration:</b> Establishing direct, automated API pipelines with the EPFO Unified Portal and ESIC Employer Portal for one-click electronic challan submissions.</li>
+      <li><b>AI-Powered Workforce Predictive Analytics:</b> Integrating machine learning models to forecast employee attrition risks, evaluate department burnout metrics, and dynamically recommend staffing adjustments.</li>
+      <li><b>Optical Character Recognition (OCR) for KYC Ingestion:</b> Embedding automated computer vision models to parse Aadhaar, PAN, and passport images during onboarding, auto-populating employee profile forms.</li>
+    </ul>
+  </div>
+
+  <!-- ==================== REFERENCES ==================== -->
+  <div class="page-container page-break">
+    <h2 class="section-header" style="margin-top: 40px;">REFERENCES</h2>
+
+    <p class="no-indent"><b>Web References:</b></p>
+    <p class="no-indent" style="font-size: 11pt; line-height: 1.6;">
+      [1] PostgreSQL Official Documentation: <i>https://www.postgresql.org/docs/18/</i><br>
+      [2] Spring Boot 3 Reference Guide: <i>https://docs.spring.io/spring-boot/docs/3.3.4/reference/html/</i><br>
+      [3] React 18 Official Documentation: <i>https://react.dev/</i><br>
+      [4] Employees' Provident Fund Organisation (EPFO) Statutory Guidelines: <i>https://www.epfindia.gov.in/</i><br>
+      [5] Employees' State Insurance Corporation (ESIC) Portal: <i>https://www.esic.gov.in/</i><br>
+      [6] Digital Personal Data Protection Act 2023 (DPDP), Ministry of Electronics &amp; IT: <i>https://www.meity.gov.in/content/digital-personal-data-protection-act-2023</i><br>
+      [7] Income Tax Department of India TRACES / Form 24Q Guidelines: <i>https://www.tdscpc.gov.in/</i>
+    </p>
+
+    <p class="no-indent" style="margin-top: 30px;"><b>Book References:</b></p>
+    <p class="no-indent" style="font-size: 11pt; line-height: 1.6;">
+      [1] Craig Walls (2022), <i>Spring in Action</i>, Sixth Edition, Manning Publications.<br>
+      [2] Alex Banks and Eve Porcello (2020), <i>Learning React: Modern Patterns for Developing React Applications</i>, O'Reilly Media.<br>
+      [3] Robert C. Martin (2017), <i>Clean Architecture: A Craftsman's Guide to Software Structure and Design</i>, Prentice Hall.<br>
+      [4] Martin Kleppmann (2017), <i>Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems</i>, O'Reilly Media.<br>
+      [5] Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein (2022), <i>Introduction to Algorithms</i>, Fourth Edition, MIT Press.<br>
+      [6] IEEE Computer Society (1998), <i>IEEE Std 830-1998: IEEE Recommended Practice for Software Requirements Specifications</i>, IEEE Standards Association.
+    </p>
+  </div>

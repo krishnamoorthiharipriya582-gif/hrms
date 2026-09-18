@@ -1,0 +1,92 @@
+﻿  <!-- ==================== APPENDIX I: SOURCE CODE ==================== -->
+  <div class="page-container page-break">
+    <div class="chapter-heading">CHAPTER 7</div>
+    <div class="chapter-title">APPENDICES</div>
+
+    <h3 class="subheading">APPENDIX I: SOURCE CODE</h3>
+
+    <div class="code-window">
+      <div class="code-title">
+        <span>backend/.../service/AttendanceService.java — Attendance Punch &amp; Grace Evaluation</span>
+        <span>Java</span>
+      </div>
+      <pre><code>package com.hrms.service;
+
+import com.hrms.dto.PunchRequest;
+import com.hrms.entity.AttendanceRecord;
+import com.hrms.repository.AttendanceRecordRepository;
+import org.springframework.stereotype.Service;
+import java.time.*;
+
+@Service
+public class AttendanceService {
+    private final AttendanceRecordRepository repo;
+
+    public AttendanceRecord punch(UUID employeeId, PunchRequest request) {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        LocalTime graceCutoff = LocalTime.of(9, 15);
+        LocalTime halfDayCutoff = LocalTime.of(10, 0);
+
+        AttendanceRecord record = repo.findByEmployeeIdAndAttendanceDate(employeeId, today)
+            .orElseGet(() -> new AttendanceRecord(employeeId, today));
+
+        if (record.getPunchInTime() == null) {
+            record.setPunchInTime(LocalDateTime.now());
+            if (now.isBefore(graceCutoff) || now.equals(graceCutoff)) {
+                record.setStatus("ON_TIME");
+            } else if (now.isBefore(halfDayCutoff)) {
+                record.setStatus("LATE");
+            } else {
+                record.setStatus("HALF_DAY");
+            }
+        } else {
+            record.setPunchOutTime(LocalDateTime.now());
+        }
+        return repo.save(record);
+    }
+}</code></pre>
+    </div>
+
+    <div class="code-window" style="margin-top: 24px;">
+      <div class="code-title">
+        <span>backend/.../controller/AdminController.java — Dynamic Statutory Configuration (FR12)</span>
+        <span>Java</span>
+      </div>
+      <pre><code>package com.hrms.controller;
+
+import com.hrms.entity.StatutoryConfig;
+import com.hrms.repository.StatutoryConfigRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.*;
+
+@RestController
+@RequestMapping("/api/v1/admin/statutory-config")
+public class AdminController {
+    private final StatutoryConfigRepository repo;
+
+    public AdminController(StatutoryConfigRepository repo) {
+        this.repo = repo;
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;List&lt;StatutoryConfig&gt;&gt; getAllConfigs() {
+        return ResponseEntity.ok(repo.findAll());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity&lt;StatutoryConfig&gt; updateConfig(
+            @PathVariable UUID id, 
+            @RequestBody StatutoryConfig update) {
+        StatutoryConfig config = repo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Config not found"));
+        config.setConfigValue(update.getConfigValue());
+        if (update.getDescription() != null) {
+            config.setDescription(update.getDescription());
+        }
+        return ResponseEntity.ok(repo.save(config));
+    }
+}</code></pre>
+    </div>
+  </div>
