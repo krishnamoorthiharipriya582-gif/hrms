@@ -39,6 +39,9 @@ All core project documents, presentation slides, test automation artifacts, and 
 | Artifact | File / Link | Description |
 | :--- | :--- | :--- |
 | 🎓 **Project Report (PDF)** | [`HRMS_Project_Report_HARIPRIYA_K.pdf`](HRMS_Project_Report_HARIPRIYA_K.pdf) | **39-page comprehensive university project report** with SKCET Crest seal, complete SRS mapping, architecture, formulas, and screenshots. |
+| 🎨 **Frontend Documentation (PDF)** | [`HRMS_Frontend_Documentation.pdf`](HRMS_Frontend_Documentation.pdf) | **Dedicated Frontend Specification & UI Walkthrough** with 15 module screenshots, component trees, and accessibility details. |
+| ⚙️ **Backend Documentation (PDF)** | [`HRMS_Backend_Documentation.pdf`](HRMS_Backend_Documentation.pdf) | **Dedicated Backend & Architecture Report** with 3NF database schema, 17 tables, 3 vector diagrams, and mathematical payroll code. |
+| 🧪 **Postman QA Report (PDF)** | [`HRMS_Postman_Testing_Report.pdf`](HRMS_Postman_Testing_Report.pdf) | **Dedicated Postman QA & Automation Report** with 17 requests, 37 assertions (100% passed), latency metrics, and execution proof screenshot. |
 | 📊 **PowerPoint Deck (.pptx)** | [`HRMS_Project_Presentation_HARIPRIYA_K.pptx`](HRMS_Project_Presentation_HARIPRIYA_K.pptx) | **16-slide professional presentation** with SKCET branding, candidate credentials, architecture, and live UI screens. |
 | 📑 **Presentation (PDF)** | [`HRMS_Project_Presentation_HARIPRIYA_K.pdf`](HRMS_Project_Presentation_HARIPRIYA_K.pdf) | **16-slide vector presentation deck** formatted in 16:9 for universal viewing and presentation. |
 | 📮 **Postman Collection** | [`HRMS_Postman_Collection.json`](HRMS_Postman_Collection.json) | **Postman v2.1.0 Collection** with 17 API requests across 8 modules and 37 automated test assertions. |
