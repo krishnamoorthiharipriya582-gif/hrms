@@ -22,6 +22,7 @@ function getBase64Image(filename) {
 
 console.log('Encoding asset images to Base64...');
 const imgMap = {
+  clgLogo: getBase64Image('skcet_crest.png'),
   useCase: getBase64Image('Fig_4_1_UseCaseDiagram.svg'),
   sequence: getBase64Image('Fig_4_2_SequenceDiagram.svg'),
   dfd: getBase64Image('Fig_4_3_DataFlowDiagram.svg'),
@@ -197,9 +198,13 @@ const appendixScreenshotsHtml = `
   </div>
 `;
 
-// Read HTML sections
-const part1 = fs.readFileSync(path.join(genDir, 'part1_preliminary.html'), 'utf8');
-const part2 = fs.readFileSync(path.join(genDir, 'part2_certificate_abstract.html'), 'utf8');
+// Read HTML sections and substitute logo
+let part1 = fs.readFileSync(path.join(genDir, 'part1_preliminary.html'), 'utf8');
+part1 = part1.replace(/CLG_LOGO_PLACEHOLDER/g, imgMap.clgLogo);
+
+let part2 = fs.readFileSync(path.join(genDir, 'part2_certificate_abstract.html'), 'utf8');
+part2 = part2.replace(/CLG_LOGO_PLACEHOLDER/g, imgMap.clgLogo);
+
 const part3 = fs.readFileSync(path.join(genDir, 'part3_toc_tables_figures.html'), 'utf8');
 const part4 = fs.readFileSync(path.join(genDir, 'part4_chapters1_2.html'), 'utf8');
 const part5 = fs.readFileSync(path.join(genDir, 'part5_chapter3.html'), 'utf8');
@@ -245,19 +250,30 @@ const headCss = `
     .text-justify { text-align: justify; }
     .font-bold { font-weight: bold; }
     
-    .skcet-header {
-      text-align: center;
+    .skcet-header-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
       border-bottom: 2px solid #881337;
       padding-bottom: 12px;
       margin-bottom: 24px;
     }
+    .skcet-logo-img {
+      width: 72px;
+      height: auto;
+      flex-shrink: 0;
+    }
+    .skcet-header-text {
+      text-align: center;
+    }
     .skcet-title {
-      font-size: 15pt;
+      font-size: 13.5pt;
       font-weight: bold;
       color: #881337;
       letter-spacing: 0.02em;
       margin: 0;
-      line-height: 1.2;
+      line-height: 1.25;
     }
     .skcet-sub {
       font-size: 8pt;
@@ -477,7 +493,7 @@ const fullHtml = headCss +
   '</body></html>';
 
 fs.writeFileSync(outputHtml, fullHtml, 'utf8');
-console.log('Full HTML Report assembled at:', outputHtml);
+console.log('Full HTML Report assembled with SKCET crest logo at:', outputHtml);
 
 async function runPdf() {
   console.log('Launching browser to render PDF...');
@@ -491,7 +507,7 @@ async function runPdf() {
   await page.setContent(fullHtml, { waitUntil: 'load', timeout: 60000 });
   await page.evaluateHandle('document.fonts.ready');
   
-  console.log('Printing to PDF...');
+  console.log('Printing to PDF with college logo...');
   await page.pdf({
     path: outputPdf,
     format: 'A4',
@@ -505,7 +521,7 @@ async function runPdf() {
   });
 
   await browser.close();
-  console.log('SUCCESS! PDF Report compiled at:', outputPdf);
+  console.log('SUCCESS! Updated PDF Report compiled at:', outputPdf);
   const sizeMb = (fs.statSync(outputPdf).size / 1024 / 1024).toFixed(2);
   console.log(`PDF Size: ${sizeMb} MB`);
 }
